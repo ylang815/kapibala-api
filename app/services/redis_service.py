@@ -57,10 +57,10 @@ class RedisService:
                 break
             except redis.ConnectionError as e:
                 retry_count += 1
-                logger.error(f"Redis connection attempt {retry_count} failed: {str(e)}")
+                logger.error(f"Redis connection attempt {retry_count} failed for host {settings.REDIS_HOST}:{settings.REDIS_PORT} - Error: {str(e)}")
                 if retry_count == max_retries:
-                    logger.error("All Redis connection attempts failed")
-                    raise Exception(f"Redis连接失败: {str(e)}")
+                    logger.error(f"All Redis connection attempts failed for host {settings.REDIS_HOST}:{settings.REDIS_PORT}")
+                    raise Exception(f"Redis连接失败 (host: {settings.REDIS_HOST}:{settings.REDIS_PORT}): {str(e)}")
                 time.sleep(1)
 
     def ensure_connection(self):
