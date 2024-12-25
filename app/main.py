@@ -3,6 +3,13 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 import logging
+import pytz
+import time
+import os
+
+# 设置全局时区为上海
+time.tzset()
+os.environ['TZ'] = 'Asia/Shanghai'
 
 logger = logging.getLogger(__name__)
 
