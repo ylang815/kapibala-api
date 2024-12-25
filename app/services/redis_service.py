@@ -10,9 +10,23 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class RedisService:
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
+    
     def __init__(self):
-        self.redis_client = None
-        self.connect_redis()
+        if not self._initialized:
+            self.redis_client = None
+            self._initialized = True
+            # 不在初始化时连接 Redis
+    
+    def _ensure_initialized(self):
+        if self.redis_client is None:
+            self.connect_redis()
 
     def connect_redis(self, max_retries=3):
         retry_count = 0
@@ -57,7 +71,7 @@ class RedisService:
             self.connect_redis()
     
     def create_order(self, food_ids: List[int]) -> bool:
-        self.ensure_connection()
+        self._ensure_initialized()
         try:
             key = "order"
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -67,7 +81,7 @@ class RedisService:
             raise Exception(f"创建订单失败: {str(e)}")
     
     def get_all_orders(self) -> List[dict]:
-        self.ensure_connection()
+        self._ensure_initialized()
         try:
             key = "order"
             all_orders = self.redis_client.hgetall(key)
@@ -84,4 +98,5 @@ class RedisService:
         except Exception as e:
             raise Exception(f"获取订单列表失败: {str(e)}")
 
+# 创建单例实例
 redis_service = RedisService() 
