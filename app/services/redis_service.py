@@ -4,6 +4,10 @@ import json
 from typing import List, Dict
 from app.core.config import settings
 import time
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class RedisService:
     def __init__(self):
@@ -14,29 +18,42 @@ class RedisService:
         retry_count = 0
         while retry_count < max_retries:
             try:
-                self.redis_client = redis.Redis(
-                    host=settings.REDIS_HOST,
-                    port=settings.REDIS_PORT,
-                    db=settings.REDIS_DB,
-                    decode_responses=True,
-                    username=settings.REDIS_USERNAME,
-                    password=settings.REDIS_PASSWORD,
-                    socket_timeout=5,  # 添加超时设置
-                    socket_connect_timeout=5
-                )
+                logger.info(f"Attempting to connect to Redis: {settings.REDIS_HOST}:{settings.REDIS_PORT}")
+                
+                # 如果没有设置密码，则不传入密码参数
+                redis_params = {
+                    "host": settings.REDIS_HOST,
+                    "port": settings.REDIS_PORT,
+                    "db": settings.REDIS_DB,
+                    "decode_responses": True,
+                    "socket_timeout": 5,
+                    "socket_connect_timeout": 5
+                }
+                
+                if settings.REDIS_PASSWORD:
+                    redis_params["password"] = settings.REDIS_PASSWORD
+                if settings.REDIS_USERNAME:
+                    redis_params["username"] = settings.REDIS_USERNAME
+
+                self.redis_client = redis.Redis(**redis_params)
+                
                 # 测试连接
                 self.redis_client.ping()
+                logger.info("Successfully connected to Redis")
                 break
             except redis.ConnectionError as e:
                 retry_count += 1
+                logger.error(f"Redis connection attempt {retry_count} failed: {str(e)}")
                 if retry_count == max_retries:
+                    logger.error("All Redis connection attempts failed")
                     raise Exception(f"Redis连接失败: {str(e)}")
-                time.sleep(1)  # 等待1秒后重试
+                time.sleep(1)
 
     def ensure_connection(self):
         try:
             self.redis_client.ping()
-        except (redis.ConnectionError, AttributeError):
+        except Exception as e:
+            logger.warning(f"Redis connection lost, attempting to reconnect: {str(e)}")
             self.connect_redis()
     
     def create_order(self, food_ids: List[int]) -> bool:

@@ -35,4 +35,8 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 async def health_check():
     return {"status": "ok"}
 
+@app.get("/")
+async def root():
+    return {"status": "ok", "message": "API is running"}
+
 app.include_router(order_router, prefix="/api/order", tags=["orders"]) 
