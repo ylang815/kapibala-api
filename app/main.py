@@ -34,7 +34,9 @@ async def health_check():
 
 # 延迟导入路由，避免循环导入
 from app.api.order import router as order_router
+from app.api.food import router as food_router
 app.include_router(order_router, prefix="/api/order", tags=["orders"])
+app.include_router(food_router, prefix="/api/food", tags=["foods"])
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
