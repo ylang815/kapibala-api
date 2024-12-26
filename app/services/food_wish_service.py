@@ -1,10 +1,16 @@
 from typing import List, Dict
 import random
+
+from app.core.decorators import async_mail_notify
 from app.services.base_redis_service import BaseRedisService
 
 class FoodWishService(BaseRedisService):
     FOOD_WISH_KEY = "food_wish"
-    
+
+    @async_mail_notify(
+        subject="开小灶加菜",
+        body_template="报！！！卡皮巴拉需要开小灶投喂: {result}"
+    )
     def create_wish(self, food: str) -> dict:
         replys = ["收到，饲养员已就位", "好嘞~我看看怎么搞", "尽快安排投喂哈", "这个有点难哟，需要鼓励下(疯狂暗示)...",
                   "passion", "🎵缓缓飘落的枫叶像思念...🎵", "四方食事，不过一碗人间烟火", "打个酱油..."]

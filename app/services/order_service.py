@@ -1,5 +1,6 @@
 from typing import List, Dict
 from app.services.base_redis_service import BaseRedisService
+from app.core.decorators import async_mail_notify
 
 class OrderService(BaseRedisService):
     ORDER_KEY = "orders"
@@ -17,6 +18,10 @@ class OrderService(BaseRedisService):
         except Exception as e:
             raise Exception(f"生成订单号失败: {str(e)}")
     
+    @async_mail_notify(
+        subject="紧急投喂",
+        body_template="卡皮巴拉需要投喂: {result}"
+    )
     def create_order(self, food_ids: List[int]) -> dict:
         """创建订单"""
         order_data = {
