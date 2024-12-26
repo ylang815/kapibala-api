@@ -8,6 +8,7 @@ class OrderService(BaseRedisService):
     
     def generate_order_number(self) -> str:
         """生成8位订单号，格式：kpbl + 4位数字"""
+        self._ensure_initialized()
         try:
             sequence = self.redis_client.incr(self.ORDER_SEQUENCE_KEY)
             sequence = sequence % 10000
@@ -20,7 +21,6 @@ class OrderService(BaseRedisService):
         """创建订单"""
         order_data = {
             "order_number": self.generate_order_number(),
-            "time": self.get_current_time(),
             "food_ids": food_ids
         }
         self.add_to_sorted_set(self.ORDER_KEY, order_data)

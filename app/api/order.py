@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
 from pydantic import BaseModel
-from app.services.redis_service import redis_service
+from app.services.order_service import order_service
 from app.core.response import success_response, error_response
 
 router = APIRouter()
@@ -12,7 +12,7 @@ class OrderCreate(BaseModel):
 @router.post("/create")
 async def create_order(order: OrderCreate):
     try:
-        order_info = redis_service.create_order(order.food_ids)
+        order_info = order_service.create_order(order.food_ids)
         return success_response(order_info)
     except Exception as e:
         return error_response(str(e))
@@ -20,7 +20,7 @@ async def create_order(order: OrderCreate):
 @router.get("/list")
 async def get_orders():
     try:
-        orders = redis_service.get_all_orders()
+        orders = order_service.get_all_orders()
         return success_response(orders)
     except Exception as e:
         return error_response(str(e))
@@ -28,7 +28,7 @@ async def get_orders():
 @router.get("/clear")
 async def clear_orders():
     try:
-        redis_service.clear_orders()
+        order_service.clear_orders()
         return success_response({"message": "所有订单已清除"})
     except Exception as e:
         return error_response(str(e)) 
