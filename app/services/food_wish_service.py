@@ -8,7 +8,8 @@ class FoodWishService(BaseRedisService):
         """创建食品愿望"""
         wish_data = {
             "food": food,
-            "is_up": 0
+            "is_up": 0,
+            "reply": ""
         }
         self.add_to_sorted_set(self.FOOD_WISH_KEY, wish_data)
         return wish_data
