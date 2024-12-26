@@ -73,6 +73,6 @@ class MailService:
             </body>
         </html>
         """
-        return self.send_mail(subject, body, html=True)
+        return self.send_mail(subject, html_content, html=True)
 
 mail_service = MailService()

@@ -9,7 +9,7 @@ class FoodWishService(BaseRedisService):
 
     @async_mail_notify(
         subject="开小灶加菜",
-        body_template="报！！！卡皮巴拉需要开小灶投喂: {result}"
+        body="报！！！卡皮巴拉需要开小灶投喂: {result}"
     )
     def create_wish(self, food: str) -> dict:
         replys = ["收到，饲养员已就位", "好嘞~我看看怎么搞", "尽快安排投喂哈", "这个有点难哟，需要鼓励下(疯狂暗示)...",

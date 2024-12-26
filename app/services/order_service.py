@@ -20,7 +20,7 @@ class OrderService(BaseRedisService):
     
     @async_mail_notify(
         subject="紧急投喂",
-        body_template="卡皮巴拉需要投喂: {result}"
+        body="卡皮巴拉需要投喂: {result}"
     )
     def create_order(self, food_ids: List[int]) -> dict:
         """创建订单"""
