@@ -70,7 +70,7 @@ class BaseRedisService:
             current_time = self.get_current_time()
             data['time'] = current_time
             timestamp = datetime.strptime(current_time, "%Y-%m-%d %H:%M:%S").timestamp()
-            return self.redis_client.zadd(key, {json.dumps(data): timestamp})
+            return self.redis_client.zadd(key, {json.dumps(data, ensure_ascii=False): timestamp})
         except Exception as e:
             raise Exception(f"添加数据失败: {str(e)}")
 

@@ -4,6 +4,7 @@ import random
 from app.core.decorators import async_mail_notify
 from app.services.base_redis_service import BaseRedisService
 
+
 class FoodWishService(BaseRedisService):
     FOOD_WISH_KEY = "food_wish"
 
@@ -19,13 +20,15 @@ class FoodWishService(BaseRedisService):
         wish_data = {
             "food": food,
             "is_up": 0,
+            "tip": "待学习",
             "reply": random.choice(replys)
         }
         self.add_to_sorted_set(self.FOOD_WISH_KEY, wish_data)
         return wish_data
-    
+
     def get_all_wishes(self) -> List[dict]:
         """获取所有食品愿望"""
         return self.get_all_from_sorted_set(self.FOOD_WISH_KEY)
 
-food_wish_service = FoodWishService() 
+
+food_wish_service = FoodWishService()
